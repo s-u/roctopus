@@ -3,7 +3,7 @@ roctopus <- function(x, FUN, formatter = hmr::.default.formatter, ...) {
     wd <- getwd() ## why?
     c <- .ro.new()
     url <-attr(c, "url")
-    tryCatch(RSclient::RS.eval(c, bquote(iotools:::.ro.chunk(.(wd), .(FUN), .(m), .(formatter))), wait=FALSE, lazy=FALSE),
+    tryCatch(RSclient::RS.eval(c, bquote(roctopus:::.ro.chunk(.(wd), .(FUN), .(m), .(formatter))), wait=FALSE, lazy=FALSE),
 	     error=function(...) NULL)
     tryCatch(RSclient::RS.close(c), error=function(...) NULL)
     url
@@ -12,5 +12,5 @@ roctopus <- function(x, FUN, formatter = hmr::.default.formatter, ...) {
   on.exit(close(f))
   x <- readLines(f)
   ## FIXME: rm r
-  lapply(x, worker)
+  lapply(x, function(o) tryCatch(worker(o), error=function(e) e))
 }
